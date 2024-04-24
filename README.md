@@ -18,6 +18,11 @@ source myEnv/bin/activate
 ```
 to activate the virtual environment.
 
+Might need to run 
+```
+sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
 ## Porting the environment to a new Jetson racer
 extract myEnv.zip to the home directory of the Jetson racer and add the myEnv kernel with the commands
 
