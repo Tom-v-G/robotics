@@ -30,9 +30,29 @@ Note: this might require reinstalling the local camera and racer modules
 python3 -m pip install jetcam/.
 python3 -m pip install jetracer/.
 ```
-If you get an `Could not initialize camera.  Please see error trace.` runtime error, openCV might be missing the gstreamer library. This can be fixed by deinstalling opencv and running the `install-opencv.sh` script (warning: runtime of approx. 1 hour)
+If you get an `Could not initialize camera.  Please see error trace.` runtime error, openCV might be missing the gstreamer library. This can be checked by running 
+```{python}
+> import cv2
+> print(cv2.getBuildInformation())
+```
+The expected result contains
+```
+  Video I/O:
+    DC1394:                      YES (2.2.5)
+    FFMPEG:                      YES
+      avcodec:                   YES (57.107.100)
+      avformat:                  YES (57.83.100)
+      avutil:                    YES (55.78.100)
+      swscale:                   YES (4.8.100)
+      avresample:                YES (3.7.0)
+    GStreamer:                   YES (1.14.5)
+    v4l/v4l2:                    YES (linux/videodev2.h)
+```
+
+This can be fixed by deinstalling opencv and running the `install-opencv.sh` script (warning: runtime of approx. 1 hour)
 
 
+## 
 https://github.com/NVIDIA/jetson-gpio
 https://github.com/NVIDIA-AI-IOT/jetcam/issues/12
 https://docs.posit.co/ide/server-pro/user/2023.03.1/jupyter-lab/guide/jupyter-kernel-management.html
