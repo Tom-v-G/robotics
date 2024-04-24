@@ -18,23 +18,21 @@ source myEnv/bin/activate
 ```
 to activate the virtual environment.
 
-Might need to run 
+
+## Potential issues
+
+If you get the following error 
+```
+raise RuntimeError("The current user does not have permissions set to "
+RuntimeError: The current user does not have permissions set to access the library functionalites. Please configure permissions or use the root user to run this
+```
+
+You might need to run 
 ```
 sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
+to update user permissions.
 
-## Porting the environment to a new Jetson racer
-extract myEnv.zip to the home directory of the Jetson racer and add the myEnv kernel with the commands
-
-```
-source myEnv/bin/activate
-python -m ipykernel install --name myEnv --display-name "Python (myEnv)" --user
-```
-Note: this might require reinstalling the local camera and racer modules
-```
-python3 -m pip install jetcam/.
-python3 -m pip install jetracer/.
-```
 If you get an `Could not initialize camera.  Please see error trace.` runtime error, openCV might be missing the gstreamer library. This can be checked by running 
 ```{python}
 > import cv2
@@ -53,12 +51,23 @@ The expected result contains
     GStreamer:                   YES (1.14.5)
     v4l/v4l2:                    YES (linux/videodev2.h)
 ```
+if GStreamer is set to `NO`, opencv needs to be reinstalled. This can be fixed by deinstalling opencv and running the `install-opencv.sh` script included in this repo (warning: runtime of approx. 1 hour).
 
-This can be fixed by deinstalling opencv and running the `install-opencv.sh` script (warning: runtime of approx. 1 hour)
+## Porting the environment to a new Jetson racer
+extract myEnv.zip to the home directory of the Jetson racer and add the myEnv kernel with the commands
 
+```
+source myEnv/bin/activate
+python -m ipykernel install --name myEnv --display-name "Python (myEnv)" --user
+```
+Note: this might require reinstalling the local camera and racer modules
+```
+python3 -m pip install jetcam/.
+python3 -m pip install jetracer/.
+```
 
-## 
-https://github.com/NVIDIA/jetson-gpio
-https://github.com/NVIDIA-AI-IOT/jetcam/issues/12
-https://docs.posit.co/ide/server-pro/user/2023.03.1/jupyter-lab/guide/jupyter-kernel-management.html
-https://github.com/jupyterlab/jupyterlab/issues/12977
+## Some useful links
+- https://github.com/NVIDIA/jetson-gpio
+- https://github.com/NVIDIA-AI-IOT/jetcam/issues/12
+- https://docs.posit.co/ide/server-pro/user/2023.03.1/jupyter-lab/guide/jupyter-kernel-management.html
+- https://github.com/jupyterlab/jupyterlab/issues/12977
