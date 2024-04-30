@@ -18,6 +18,13 @@ source myEnv/bin/activate
 ```
 to activate the virtual environment.
 
+When disconnecting the robot, use the command in the terminal
+
+```
+sudo power off
+```
+in order to prevent the SD card in the robot from formatting.
+
 
 ## Potential issues
 
