@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 from scipy.stats import mode
 from argparse import ArgumentParser
@@ -26,10 +27,13 @@ if __name__ == '__main__':
     args = vars(ap.parse_args())
 
     directions_map = np.zeros([args['size'], 5])
+    angles_list = []
 
     # cap = cv.VideoCapture('moving_camera_1.mp4')
     # cap = cv.VideoCapture('moving_camera_2.mp4')
-    cap = cv.VideoCapture('moving_camera_2.mp4')
+    # cap = cv.VideoCapture('moving_camera_2_speed_4x.mp4')
+    cap = cv.VideoCapture('moving_camera_3.mp4')
+    # cap = cv.VideoCapture('car_dashcam.mp4')
     if args['record']:
         h = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
         w = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
@@ -53,19 +57,42 @@ if __name__ == '__main__':
         'flags': cv.OPTFLOW_LK_GET_MIN_EIGENVALS
     }
 
+    locArray = []
+
+    previous_timestamp = time.time();
+    current_timestamp = 0
+
     while True:
         grabbed, frame = cap.read()
         if not grabbed:
             break
+
+        current_timestamp = time.time();
+        time_difference = current_timestamp - previous_timestamp
+
+        print("time difference:", time_difference)
 
         gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
         flow = cv.calcOpticalFlowFarneback(gray_previous, gray, None, **param)
         mag, ang = cv.cartToPolar(flow[:, :, 0], flow[:, :, 1], angleInDegrees=True)
         ang_180 = ang/2
         gray_previous = gray
+
+        
         
         move_sense = ang[mag > args['threshold']]
         move_mode = mode(move_sense)[0]
+
+        print("move_sense:", mode(move_sense))
+
+        print("move_mode: ", move_mode)
+        # angles_list.append({"angle": move_mode, "time_difference": time_difference})
+        angles_list.append(move_mode)
+
+     
+
+
+
 
         if 10 < move_mode <= 100:
             directions_map[-1, 0] = 1
@@ -113,8 +140,11 @@ if __name__ == '__main__':
             text = 'Moving to the right'
         else:
             text = 'WAITING'
-
-        print(text)
+        
+        text = str(move_mode)
+        
+        if loc in [0, 1, 2, 3]:
+            locArray.append(loc)
 
         hsv[:, :, 0] = ang_180
         hsv[:, :, 2] = cv.normalize(mag, None, 0, 255, cv.NORM_MINMAX)
@@ -135,9 +165,15 @@ if __name__ == '__main__':
         if k == ord('q'):
             break
 
+        previous_timestamp = current_timestamp
+
     cap.release()
     if args['record']:
         out.release()
     if args['plot']:
         plt.ioff()
     cv.destroyAllWindows()
+    print(angles_list)
+
+
+
