@@ -31,7 +31,12 @@ You might need to run
 ```
 sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
-to update user permissions.
+to update user permissions, or
+```
+sudo usermod -aG gpio $USER
+sudo chown root.gpio /dev/gpiochip0
+sudo chmod 660 /dev/gpiochip0
+```
 
 If you get an `Could not initialize camera.  Please see error trace.` runtime error, openCV might be missing the gstreamer library. This can be checked by running 
 ```{python}
