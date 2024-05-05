@@ -31,8 +31,8 @@ if __name__ == '__main__':
 
     # cap = cv.VideoCapture('moving_camera_1.mp4')
     # cap = cv.VideoCapture('moving_camera_2.mp4')
-    # cap = cv.VideoCapture('moving_camera_2_speed_4x.mp4')
-    cap = cv.VideoCapture('moving_camera_3.mp4')
+    cap = cv.VideoCapture('moving_camera_2_speed_4x.mp4')
+    # cap = cv.VideoCapture('moving_camera_3.mp4')
     # cap = cv.VideoCapture('car_dashcam.mp4')
     if args['record']:
         h = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
