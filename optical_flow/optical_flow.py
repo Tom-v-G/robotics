@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
+
 from scipy.stats import mode
 from argparse import ArgumentParser
 
@@ -31,8 +32,8 @@ if __name__ == '__main__':
 
     # cap = cv.VideoCapture('moving_camera_1.mp4')
     # cap = cv.VideoCapture('moving_camera_2.mp4')
-    cap = cv.VideoCapture('moving_camera_2_speed_4x.mp4')
-    # cap = cv.VideoCapture('moving_camera_3.mp4')
+    # cap = cv.VideoCapture('moving_camera_2_speed_4x.mp4')
+    cap = cv.VideoCapture('moving_camera_3.mp4')
     # cap = cv.VideoCapture('car_dashcam.mp4')
     if args['record']:
         h = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
@@ -58,9 +59,13 @@ if __name__ == '__main__':
     }
 
     locArray = []
+    flowsArray = []
 
     previous_timestamp = time.time();
     current_timestamp = 0
+
+    total_displacement_x = 0
+    total_displacement_y = 0
 
     while True:
         grabbed, frame = cap.read()
@@ -74,11 +79,31 @@ if __name__ == '__main__':
 
         gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
         flow = cv.calcOpticalFlowFarneback(gray_previous, gray, None, **param)
+        image_flow_x = np.mean(flow[:, :, 0])
+        image_flow_y = np.mean(flow[:, :, 1])
+
+        total_displacement_x += image_flow_x
+        total_displacement_y += image_flow_y
+
+
+
+
+
+        flowsArray.append(flow)
+        print("flow:", flow)
         mag, ang = cv.cartToPolar(flow[:, :, 0], flow[:, :, 1], angleInDegrees=True)
+        # print("cartToPolar", cv.cartToPolar(flow[:, :, 0], flow[:, :, 1], angleInDegrees=True))
         ang_180 = ang/2
         gray_previous = gray
 
+
+
+
+
+
         
+        print("mag:", mag)
+        print("frame:", frame)
         
         move_sense = ang[mag > args['threshold']]
         move_mode = mode(move_sense)[0]
@@ -141,17 +166,24 @@ if __name__ == '__main__':
         else:
             text = 'WAITING'
         
-        text = str(move_mode)
+        # text = str(move_mode)
+        text = str(image_flow_x) + " " + str(image_flow_y)
         
         if loc in [0, 1, 2, 3]:
             locArray.append(loc)
 
         hsv[:, :, 0] = ang_180
         hsv[:, :, 2] = cv.normalize(mag, None, 0, 255, cv.NORM_MINMAX)
+        # normalized = cv.normalize(mag, None, 0, 255, cv.NORM_MINMAX)
+        print("hsv:", hsv[:, :, 2]);
         rgb = cv.cvtColor(hsv, cv.COLOR_HSV2BGR)
 
         frame = cv.flip(frame, 1)
         cv.putText(frame, text, (30, 90), cv.FONT_HERSHEY_COMPLEX, frame.shape[1] / 500, (0, 0, 255), 2)
+
+
+        
+
 
         k = cv.waitKey(1) & 0xff
         if k == ord('q'):
@@ -176,4 +208,25 @@ if __name__ == '__main__':
     print(angles_list)
 
 
+#     # average of flows array 
+#     print(flowsArray);
+#     a = flowsArray[:][0]
+#     print("a", a)
 
+# # flow[:, :, 0], flow[:, :, 1], 
+
+
+    print("total x:", total_displacement_x)
+    print("total y:", total_displacement_y)
+
+
+
+    # je hebt nu per frame het gemiddelde versnelling/flow voor de x en voor de y. (2 gemiddeldes)
+    # -> per frame elk gemiddelde (dus van x en van y) integreren over de tijd (de duur van één frame)
+    # -> dan heb je de snelheid van de x en van de y in elk frame
+
+    # -> en dan die snelheden integreren over de tijdsduur van één frame
+    # -> dan heb je de displacement x en de displacement y per frame 
+
+    # en dan tel je die displacements weer op bij die total displacement van elke (die eerst 0 was)
+    # en dan zien we wel weer
