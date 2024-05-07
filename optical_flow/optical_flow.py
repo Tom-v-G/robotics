@@ -207,6 +207,8 @@ if __name__ == '__main__':
     cv.destroyAllWindows()
     print(angles_list)
 
+    print(locArray)
+
 
 #     # average of flows array 
 #     print(flowsArray);
