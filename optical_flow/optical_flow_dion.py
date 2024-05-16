@@ -4,9 +4,27 @@ import matplotlib.pyplot as plt
 import time
 import math
 
+
 from scipy.stats import mode
 from argparse import ArgumentParser
+import os
 
+# docent rijdt auto gekke bochten en camera neemt op
+# docent drukt op Q, en dan:
+# * stopt de recording
+# * wordt de video opgeslagen en ingeladen
+# * de video wordt ingekort zodat hij 4 keer zo snel (en zo kort) is
+# * de frames worden geanalyseerd en er wordt een mapje gemaakt
+# * de angle wordt bepaald
+# * de auto draait in die angle
+# * de auto rijdt naar de home position
+
+
+rec_flag = 'stop' # start,pause,stop
+vname = None
+username = os.getlogin()
+
+                    
 # make a function that takes the final x and y coordinates and returns the angle is has to make to and how far it is from the home position using pythagoras
 def calc_way_back(x_coord, y_coord,gamma):
     length_back = np.sqrt((x_coord**2) + (y_coord**2))
@@ -22,8 +40,8 @@ def calc_way_back(x_coord, y_coord,gamma):
 if __name__ == '__main__':
     plt.ion()
     plt.figure()
-    # plt.xlim(-20,20)
-    # plt.ylim(-20,30)
+    plt.xlim(-20,20)
+    plt.ylim(-20,30)
 
     ap = ArgumentParser()
     ap.add_argument('-rec', '--record', default=False, action='store_true', help='Record?')
@@ -52,7 +70,10 @@ if __name__ == '__main__':
     # cap = cv.VideoCapture('moving_camera_2_speed_4x.mp4')
     # cap = cv.VideoCapture('moving_camera_3.mp4')
     # cap = cv.VideoCapture('car_dashcam.mp4')
-    cap = cv.VideoCapture('driving2.mp4')
+    # cap = cv.VideoCapture('../../Videos/2024-05-06-12.32.33.avi')
+
+    # cap moet het filmpje bevatten dat met "keyboard_control_record_video" is gemaakt
+    cap = cv.VideoCapture(f"/home/{username}/Videos/picarx_recording.avi")
 
     if args['record']:
         h = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
@@ -106,8 +127,8 @@ if __name__ == '__main__':
 
         x_flow, y_flow = np.median(flow[:, :, 0]), np.median(flow[:, :, 1])
         all_x_flow.append(x_flow)
-        # print(x_flow)
-        # print(x_flow>.02)
+        print(x_flow)
+        print(x_flow>.02)
         # x_flow = x_flow[x_flow > .02]
         # y_flow = y_flow[y_flow > .02]
 
@@ -124,8 +145,8 @@ if __name__ == '__main__':
         total_displacement_x += x_coord
         total_displacement_y += y_coord
 
-        # plt.scatter(total_displacement_x,total_displacement_y)
-        
+        plt.scatter(total_displacement_x,total_displacement_y)
+
         move_sense = ang[mag > args['threshold']]
         move_mode = mode(move_sense)[0]
 
@@ -138,7 +159,7 @@ if __name__ == '__main__':
         # angles_list.append({"angle": move_mode, "time_difference": time_difference})
         angles_list.append(move_mode)
 
-     
+
 
 
 
@@ -189,9 +210,9 @@ if __name__ == '__main__':
             text = 'Moving to the right'
         else:
             text = 'WAITING'
-        
+
         text = str(displacement_y) + ', ' + str(angle)
-        
+
         if loc in [0, 1, 2, 3]:
             locArray.append(loc)
 
@@ -224,7 +245,7 @@ if __name__ == '__main__':
     cv.destroyAllWindows()
     print(angles_list)
 
-# plt.show()
+plt.show()
 
 print("total_displacement_x: ", total_displacement_x)
 print("total_displacement_y: ", total_displacement_y)
