@@ -39,7 +39,7 @@ if __name__ == "__main__":
         
         Vilib.rec_video_set["path"] = f"/home/{username}/Videos/" # set path
 
-        Vilib.camera_start(vflip=False,hflip=False)
+        Vilib.camera_start(vflip=False,hflip=True)
         Vilib.display(local=True,web=True)
         sleep(0.8)  # wait for startup
 
@@ -83,6 +83,8 @@ if __name__ == "__main__":
                 # go back to home position
                 elif 'q' == key:
                     px.set_dir_servo_angle(-7)
+                    # turn towards home position
+                    # drive forward
                     px.backward(80)
 
                 px.set_cam_tilt_angle(tilt_angle)
@@ -101,7 +103,8 @@ if __name__ == "__main__":
                 if rec_flag == 'stop':
                     rec_flag = 'start'
                     # set name
-                    vname = strftime("%Y-%m-%d-%H.%M.%S", localtime())
+                    # vname = strftime("%Y-%m-%d-%H.%M.%S", localtime())
+                    vname = "picarx_recording"
                     Vilib.rec_video_set["name"] = vname
                     # start record
                     Vilib.rec_video_run()
@@ -115,10 +118,12 @@ if __name__ == "__main__":
                     rec_flag = 'start'
                     Vilib.rec_video_start()
                     print_overwrite('continue')
+            elif key == 'e':
             # stop
                 key = None
                 rec_flag = 'stop'
                 Vilib.rec_video_stop()
+                # print_overwrite("The video saved as %s%s.avi"%(Vilib.rec_video_set["path"],vname),end='\n')
                 print_overwrite("The video saved as %s%s.avi"%(Vilib.rec_video_set["path"],vname),end='\n')
 
 	    # go back to home position
@@ -138,3 +143,5 @@ if __name__ == "__main__":
         px.set_cam_pan_angle(-60)  
         px.set_dir_servo_angle(0)  
         sleep(.2)
+
+
