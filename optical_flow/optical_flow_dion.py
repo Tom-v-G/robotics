@@ -4,27 +4,16 @@ import matplotlib.pyplot as plt
 import time
 import math
 
-
 from scipy.stats import mode
 from argparse import ArgumentParser
-import os
 
-# docent rijdt auto gekke bochten en camera neemt op
-# docent drukt op Q, en dan:
-# * stopt de recording
-# * wordt de video opgeslagen en ingeladen
-# * de video wordt ingekort zodat hij 4 keer zo snel (en zo kort) is
-# * de frames worden geanalyseerd en er wordt een mapje gemaakt
-# * de angle wordt bepaald
-# * de auto draait in die angle
-# * de auto rijdt naar de home position
+from vidstab import VidStab
+
+# Using defaults
+# stabilizer = VidStab(threshold=42)
+# stabilizer.stabilize(input_path='picarx_recording3.avi', output_path='picarx_recording3_stable.avi')
 
 
-rec_flag = 'stop' # start,pause,stop
-vname = None
-username = os.getlogin()
-
-                    
 # make a function that takes the final x and y coordinates and returns the angle is has to make to and how far it is from the home position using pythagoras
 def calc_way_back(x_coord, y_coord,gamma):
     length_back = np.sqrt((x_coord**2) + (y_coord**2))
@@ -37,58 +26,11 @@ def calc_way_back(x_coord, y_coord,gamma):
         alpha = np.pi
     return alpha, length_back
 
-
-# We will speed up the video so that it takes less time
-video_normal = "picarx_recording.avi"
-video_spedup = "picarx_recording_fast.avi"
-
-# For that we remove every even frame
-def remove_even_frames(video_normal, video_spedup):
-    # Check if the input file exists
-    if not os.path.exists(video_normal):
-        print(f"Error: The file {video_normal} does not exist.")
-        return
-    
-    # Open the input video
-    cappie = cv.VideoCapture(video_normal)
-    if not cappie.isOpened():
-        print("Error: Could not open the input video.")
-        return
-
-    # Get the properties of the video
-    frame_width = int(cappie.get(cv.CAP_PROP_FRAME_WIDTH))
-    frame_height = int(cappie.get(cv.CAP_PROP_FRAME_HEIGHT))
-    fps = cappie.get(cv.CAP_PROP_FPS)
-    codec = cv.VideoWriter_fourcc(*'XVID')  # You can change this to other codecs
-
-    # Open the output video writer
-    out = cv.VideoWriter(video_spedup, codec, fps, (frame_width, frame_height))
-
-    frame_count = 0
-
-    while cappie.isOpened():
-        ret, frame = cappie.read()
-        if not ret:
-            break
-        
-        # Write every odd frame (0-based index, so 0 is first frame, 1 is second frame, etc.)
-        if frame_count % 2 == 0:
-            out.write(frame)
-
-        frame_count += 1
-
-    # Release everything when the job is finished
-    cappie.release()
-    out.release()
-    print(f"Finished processing. Output saved to {video_spedup}")
-
-remove_even_frames(video_normal, video_spedup)
-
 if __name__ == '__main__':
     plt.ion()
     plt.figure()
-    plt.xlim(-20,20)
-    plt.ylim(-20,30)
+    # plt.xlim(-20,20)
+    # plt.ylim(-20,30)
 
     ap = ArgumentParser()
     ap.add_argument('-rec', '--record', default=False, action='store_true', help='Record?')
@@ -117,10 +59,8 @@ if __name__ == '__main__':
     # cap = cv.VideoCapture('moving_camera_2_speed_4x.mp4')
     # cap = cv.VideoCapture('moving_camera_3.mp4')
     # cap = cv.VideoCapture('car_dashcam.mp4')
-    # cap = cv.VideoCapture('../../Videos/2024-05-06-12.32.33.avi')
-
-    # cap moet het filmpje bevatten dat met "keyboard_control_record_video" is gemaakt
-    cap = cv.VideoCapture(f"/home/{username}/Videos/picarx_recording_fast.avi")
+    cap = cv.VideoCapture('picarx_recording3.avi')
+    # cap.set(cv.CAP_PROP_EXPOSURE,-300)
 
     if args['record']:
         h = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
@@ -174,8 +114,8 @@ if __name__ == '__main__':
 
         x_flow, y_flow = np.median(flow[:, :, 0]), np.median(flow[:, :, 1])
         all_x_flow.append(x_flow)
-        print(x_flow)
-        print(x_flow>.02)
+        # print(x_flow)
+        # print(x_flow>.02)
         # x_flow = x_flow[x_flow > .02]
         # y_flow = y_flow[y_flow > .02]
 
@@ -184,7 +124,7 @@ if __name__ == '__main__':
         displacement_y = np.cumsum(velocity_y * dt)
 
         # Translate movement x field to rotation angle
-        angle = angle + x_flow/(-711.6/1.57) # radians (gamma)
+        angle = angle + x_flow/(945/(np.pi/2)) # radians (gamma)
 
         x_coord = displacement_y * np.cos(angle) * np.sin(angle)
         y_coord = displacement_y * np.cos(angle)**2
@@ -193,7 +133,7 @@ if __name__ == '__main__':
         total_displacement_y += y_coord
 
         plt.scatter(total_displacement_x,total_displacement_y)
-
+        
         move_sense = ang[mag > args['threshold']]
         move_mode = mode(move_sense)[0]
 
@@ -206,7 +146,7 @@ if __name__ == '__main__':
         # angles_list.append({"angle": move_mode, "time_difference": time_difference})
         angles_list.append(move_mode)
 
-
+     
 
 
 
@@ -257,9 +197,9 @@ if __name__ == '__main__':
             text = 'Moving to the right'
         else:
             text = 'WAITING'
-
-        text = str(displacement_y) + ', ' + str(angle)
-
+        
+        text = str(angle)
+        
         if loc in [0, 1, 2, 3]:
             locArray.append(loc)
 
@@ -292,12 +232,13 @@ if __name__ == '__main__':
     cv.destroyAllWindows()
     print(angles_list)
 
-plt.show()
+# plt.show()
 
 print("total_displacement_x: ", total_displacement_x)
 print("total_displacement_y: ", total_displacement_y)
 # print('x_flow:', all_x_flow)
 all_x_flow_array = np.array(all_x_flow)
+print('x_flow:', all_x_flow_array)
 print(np.sum(all_x_flow_array[all_x_flow_array < -1]))
 angle_final, length_back = calc_way_back(total_displacement_x, total_displacement_y, angle)
 print('returning angle:', angle_final,'length_back:', length_back)
