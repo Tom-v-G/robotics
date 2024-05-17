@@ -44,17 +44,12 @@ class Robot:
         
         self.left_turn_angle = -24.5
         self.right_turn_angle = 18
-        
-        if self.RECORD:
-            
 
         # Initiliase robot
         self.px = Picarx()
         
         self.px.set_cam_tilt_angle(15)
         self.px.set_cam_pan_angle(-60) 
-
-        
 
     def start_camera(self):
         try:
@@ -117,6 +112,7 @@ class Robot:
         self.px.forward(0)
         if self.RECORD:
             self.stop_camera()
+        
             
     def calculate_position():
         pass
