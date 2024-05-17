@@ -40,21 +40,29 @@ class Robot:
         self.max_tilt = 30
 
         self.power = 50
+        self.turning_power = 50
         
         self.left_turn_angle = -24.5
         self.right_turn_angle = 18
+        
+        if self.RECORD:
+            
 
         # Initiliase robot
         self.px = Picarx()
+        
+        self.px.set_cam_tilt_angle(15)
+        self.px.set_cam_pan_angle(-60) 
 
         
 
     def start_camera(self):
         try:
-            self.vname = 'picarx_recording'
             username = os.getlogin()
+            self.vname = 'picarx_recording'
+            self.vpath = f"/home/{username}/Videos/"
             
-            Vilib.rec_video_set["path"] = f"/home/{username}/Videos/" # set path
+            Vilib.rec_video_set["path"] = self.vpath # set path
             Vilib.rec_video_set["name"] = self.vname
 
             Vilib.camera_start(vflip=False,hflip=True)
@@ -90,10 +98,10 @@ class Robot:
                     self.px.backward(self.power)
                 elif 'a' == key:
                     self.px.set_dir_servo_angle(self.left_turn_angle)
-                    self.px.forward(self.power)
+                    self.px.forward(self.turning_power)
                 elif 'd' == key:
                     self.px.set_dir_servo_angle(self.right_turn_angle)
-                    self.px.forward(self.power)               
+                    self.px.forward(self.turning_power)               
                 elif 'q' == key:
                     break
 
@@ -109,7 +117,18 @@ class Robot:
         self.px.forward(0)
         if self.RECORD:
             self.stop_camera()
+            
+    def calculate_position():
+        pass
+
+    def return_home():
+        pass
+        
 
 if __name__== "__main__":
-    picar = Robot()
+    picar = Robot(True, True)
+    print('Press any key to start')
+    start = input()
     picar.manual_mode()
+    picar.calculate_position()
+    picar.return_home()
