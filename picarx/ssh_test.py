@@ -1,24 +1,20 @@
-from paramiko import SSHClient
+import picarx.lib.SSH as SSH
 
+if __name__ == '__main__':
+    ssh = SSH()
+    
+    ssh.transfer_file('tts.txt', 'Downloads/tts.txt')
+    ssh.transfer_file('picarx/tts.py', 'Downloads/tts.py')
 
-ssh = SSHClient()
-ssh.load_system_host_keys()
-# print(ssh.load_system_host_keys())
-# print(ssh.load_host_keys())
-ssh.connect('10.42.0.1', username='pi', password='raspberry')
-print('Connection Established')
+    command = f'''
+    sudo python3 Downloads/tts.py
+    '''
+    
+    output = ssh.run_command(command)
+    print(output)
 
-sftp = ssh.open_sftp()
-sftp.put('picarx/helloworld.py', 'Downloads/helloworld.py')
-sftp.close()
-
-command = '''
-python3 Downloads/helloworld.py
-'''
-ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(command, get_pty=True)
-ssh_stdin.close()
-print(ssh_stdout.read()) #print the output of command
-ssh.close()
+    ssh.close()
+    
 
 
 # https://stackoverflow.com/questions/68335/how-to-copy-a-file-to-a-remote-server-in-python-using-scp-or-ssh
