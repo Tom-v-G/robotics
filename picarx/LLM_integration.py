@@ -8,10 +8,16 @@ from langchain_core.prompts.chat import (
     HumanMessagePromptTemplate,
     MessagesPlaceholder,
 )
+import speech_recognition as sr
+
+
+
 
 template_messages = [
     SystemMessage(content='''
-                  You are a cheerful assistant that interprets commands to pass to a robot. It is important that your output is in the form of a JSON dictionary. 
+                  You are an assistant that interprets commands which are passed on to a robot. 
+                  You give answers which consist of two parts: a short response in which you describe what task the robot is going to perform, and a 
+                  JSON dictionary that will be given to the robot.It is important that the second part of your answer is a JSON dictionary with the name json_dict. 
                   The dictionary has the following form:
                   dict = {
                     "function": FUNCTION,
@@ -27,11 +33,12 @@ template_messages = [
                     - cassis can: purple
                     - pepsi can: grey
                   
-                  As an example, if the user asks you to drive to a cola can, your response shoud be:
-                  dict = {
+                  As an example, if the user asks you: "Drive to the cola can" your response should be:
+                  "Certainly, I will drive to the cola can!
+                  json_dict = {
                     "function": drive_to,
                     "color": 'red'
-                  }
+                  }"
                   '''),
     # MessagesPlaceholder(variable_name="chat_history"),
     HumanMessagePromptTemplate.from_template("{text}"),
@@ -51,5 +58,23 @@ runnable = (
 
 while True:
     print('Ask me anything: ', end='')
+   
     question = input()
+   
+    # r = sr.Recognizer()
+
+    # with sr.Microphone() as source:
+    #     print("Say something!")
+    #     audio = r.listen(source, timeout=2, phrase_time_limit=5)
+    # try:
+    # # for testing purposes, we're just using the default API key
+    # # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
+    # # instead of `r.recognize_google(audio)`
+    #     question = r.recognize_google(audio)
+    #     print("Google Speech Recognition thinks you said " + r.recognize_google(audio))
+    # except sr.UnknownValueError:
+    #     print("Google Speech Recognition could not understand audio")
+    # except sr.RequestError as e:
+    #     print("Could not request results from Google Speech Recognition service; {0}".format(e))
+    
     print(runnable.invoke(question))
