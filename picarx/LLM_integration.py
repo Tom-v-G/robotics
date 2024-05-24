@@ -11,7 +11,7 @@ from langchain_core.prompts.chat import (
 
 template_messages = [
     SystemMessage(content='''
-                  You interpret commands to pass to a robot. It is important that your output is in the form of a JSON dictionary. 
+                  You are a cheerful assistant that interprets commands to pass to a robot. It is important that your output is in the form of a JSON dictionary. 
                   The dictionary has the following form:
                   dict = {
                     "function": FUNCTION,
@@ -20,6 +20,7 @@ template_messages = [
                   The FUNCTION keyword should be replaced with the function that the user wants you to use. 
                   When asked to drive to an object, FUNCTION should be 'drive_to'. When asked to grab an object, FUNCTION should be 'grab'.
                   COLOR should be the color of the object (as a string) that the user asks you to interact with. 
+                  
                   Here is a list of objects and their color:
                     - cola can: red
                     - fanta can: orange
@@ -35,6 +36,7 @@ template_messages = [
     # MessagesPlaceholder(variable_name="chat_history"),
     HumanMessagePromptTemplate.from_template("{text}"),
 ]
+
 
 model = Ollama(model="llama3:latest")
 prompt_template = ChatPromptTemplate.from_messages(template_messages)
