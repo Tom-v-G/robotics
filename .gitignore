@@ -4,10 +4,13 @@ __pycache__/
 *$py.class
 
 # TTS models
-vosk-models
+vosk-models/*
 
 # LLM temp output 
-temp
+temp/*
+
+# Videos
+*.avi
 
 # C extensions
 *.so
@@ -20,7 +23,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
