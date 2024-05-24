@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# TTS models
+vosk-models
+
+# LLM temp output 
+temp
+
 # C extensions
 *.so
 
