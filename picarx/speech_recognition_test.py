@@ -1,3 +1,8 @@
+'''
+Requires pyAudio, pocketsphinx and portAudio.
+PortAudio needs to be installed to your system, the other two can be installed with pip
+'''
+
 
 import speech_recognition as sr
 
