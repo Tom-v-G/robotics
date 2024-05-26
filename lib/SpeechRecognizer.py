@@ -10,7 +10,7 @@ PortAudio needs to be installed to your system, the other two can be installed w
 class SpeechRecognizer():
 
     def __init__(self):
-        self.model = vosk.Model('picarx/vosk-models/vosk-model-en-us-0.22')
+        self.model = vosk.Model('vosk-models/vosk-model-en-us-0.22')
         self.rec = vosk.KaldiRecognizer(self.model, 16000)
 
     def listen(self, output_file_path, keyword="terminate"):

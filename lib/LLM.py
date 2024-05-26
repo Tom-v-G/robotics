@@ -61,3 +61,13 @@ class LLM:
         with open(answer_filepath, 'w') as file:
             file.write(answer)
         
+
+if __name__ == '__main__':
+    llm = LLM()
+    
+    while True:
+        print('Ask a question: ' , end ='')
+        question = input()
+        
+        print(llm.runnable.invoke(question))
+

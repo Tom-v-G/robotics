@@ -28,6 +28,24 @@ class SSH:
         sftp.close()
         print('File Transfer Complete')
 
+    def upload_file(self, local_filepath, outbound_filepath):
+        print(f'Starting File Transfer of {local_filepath}')
+        sftp = self.ssh.open_sftp()
+        
+        sftp.put(local_filepath, outbound_filepath)
+
+        sftp.close()
+        print('File Transfer Complete')
+
+    def download_file(self, outbound_filepath, local_filepath):
+        print(f'Starting File Transfer of {outbound_filepath}')
+        sftp = self.ssh.open_sftp()
+        
+        sftp.get(outbound_filepath, local_filepath)
+
+        sftp.close()
+        print('File Transfer Complete')
+
     def run_command(self, command):
         ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command(command, get_pty=True)
         ssh_stdin.close()

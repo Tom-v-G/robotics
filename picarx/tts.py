@@ -8,7 +8,6 @@ if geteuid() != 0:
 
 tts = TTS()
 
-
 def main():
     tts.lang("en-US")
 
