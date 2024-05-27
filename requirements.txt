@@ -1,0 +1,6 @@
+vosk
+langchain
+langchain-community
+paramiko
+pyaudio
+ultralytics
