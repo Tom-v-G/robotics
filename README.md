@@ -43,12 +43,11 @@ To get videos from the Picar-x to a local computer you open a terminal and use t
 ```sudo scp -r "pi@10.42.0.1:/home/pi/Videos/picarx_recording.avi" ~/Downloads```
 
 
-## Setting up a conda environment 
-See the environment.txt file for the required packages. You can automatically install all the required packages using
-```
-$ conda create --name <env> --file environment.txt
-```
-Note that 
-- pyaudio relies on portAudio, which needs to be installed manually (see portAudio documentation for a guide)
-- Speech recognition uses vosk models which need to be downloaded and added to the vosk-models folder (https://alphacephei.com/vosk/models). We use vosk-model-en-us-0.22
+## Setting up
+1. Create a python virtual environment / conda environtment henceforth refered to as `venv`.
+2. Install [portAudio](https://files.portaudio.com/)
+3. Install Ollama and in your terminal run the command  `ollama run llama3:latest` to download the latest LLM version.
+3. install the packages in requirements.txt with pip in your venv
+4. Download the  [vosk-model-en-us-0.22](https://alphacephei.com/vosk/models) and place it in a folder called vosk-models
+
 

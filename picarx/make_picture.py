@@ -44,21 +44,23 @@ class Robot:
 
 def main():
     #picar = Robot(True, True)
-    try:
-        username = os.getlogin()
-        
-        picture_path = f"/home/{username}/Pictures/" # set path
-        picture_name = "test"
+    # try:
+    username = os.getlogin()
+    
+    picture_path = f"/home/{username}/Pictures/" # set path
+    picture_name = "test"
 
-        Vilib.camera_start(vflip=False,hflip=True)
-        sleep(0.8)  # wait for startup
+    Vilib.camera_start(vflip=False,hflip=True)
+    sleep(0.8)  # wait for startup
 
-        Vilib.take_photo(name=picture_name , path=picture_path)
-        print(f"Picture saved as {picture_name}", end='\n')
-    except:
-        raise Exception("Oopsiewoopsie camera is stukkiewukkie")
-
+    Vilib.take_photo(photo_name=picture_name, path=f"{picture_path}")
+    Vilib.camera_close()
+    print(f"Picture saved as {picture_name}", end='\n')
+    # except:
+    # raise Exception("Oopsiewoopsie camera is stukkiewukkie")
+    
 
 if __name__== "__main__":
+
     main()
     

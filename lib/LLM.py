@@ -1,6 +1,7 @@
 from langchain_community.llms import Ollama
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.output_parsers.json import JsonOutputParser
 from langchain.memory import ConversationBufferMemory
 from langchain_core.messages import SystemMessage
 from langchain_core.prompts.chat import (
