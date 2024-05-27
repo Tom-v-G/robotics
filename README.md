@@ -49,5 +49,9 @@ To get videos from the Picar-x to a local computer you open a terminal and use t
 3. Install Ollama and in your terminal run the command  `ollama run llama3:latest` to download the latest LLM version.
 3. install the packages in requirements.txt with pip in your venv
 4. Download the  [vosk-model-en-us-0.22](https://alphacephei.com/vosk/models) and place it in a folder called vosk-models
+5. Connect with SSH at least once via your terminal with:
+```
+ssh pi@10.42.0.1 
+```
 
 
