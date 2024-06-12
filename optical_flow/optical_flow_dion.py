@@ -5,7 +5,7 @@ import time
 import math
 
 import matplotlib
-gui_env = ['TKAgg','GTKAgg','Qt4Agg','WXAgg']
+# gui_env = ['TKAgg','GTKAgg','Qt4Agg','WXAgg']
 
 matplotlib.use('TKAgg', force=True)
 
@@ -138,8 +138,11 @@ if __name__ == '__main__':
         x_coord = displacement_y * np.cos(angle) * np.sin(angle)
         y_coord = displacement_y * np.cos(angle)**2
 
-        total_displacement_x += x_coord
-        total_displacement_y += y_coord
+        # print(f'x: {x_coord}') 
+        # print(f'y: {y_coord}')
+
+        total_displacement_x += x_coord[0]
+        total_displacement_y += y_coord[0]
 
         x_list.append(total_displacement_x)
         y_list.append(total_displacement_y)
