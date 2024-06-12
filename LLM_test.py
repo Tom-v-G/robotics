@@ -6,10 +6,10 @@ if __name__ == '__main__':
     while True:
       print('Ask me anything: ', end='')
       question = input()
-      with open('picarx/temp/question.txt', 'w') as file:
+      with open('temp/question.txt', 'w') as file:
          file.write(question)
 
-      LLM.answer('picarx/temp/question.txt','picarx/temp/answer.txt')
-      with open('picarx/temp/answer.txt', 'r') as file:
+      llm.answer('temp/question.txt','temp/answer.txt')
+      with open('temp/answer.txt', 'r') as file:
          text = file.read()
       print(text)

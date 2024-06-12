@@ -1,5 +1,6 @@
 from paramiko import SSHClient
 import time
+import readchar
 
 '''
 Resources: 
@@ -57,18 +58,104 @@ class SSH:
         print('Closing Connection')
         self.ssh.close()
 
+    def open_terminal(self):
+        
+        # command = f'''
+        # python3
+        # '''
+        channel = self.ssh.get_transport().open_session()
+        channel.get_pty()
+        channel.invoke_shell()
+
+        # stdin, stdout, stderr = self.ssh.exec_command(command, get_pty=True)
+        # # for l in iter(stdout.readline, "") :
+        # #     print(l, end="")
+        # # for l in iter(stderr.readline, "") :
+        # #     print(l, end="")
+        
+        # print("give command")
+        # while True:
+        #     key = input()
+        #     if key == 'q':
+        #         break
+        #     else: 
+        #         command = key
+        #         print(f"executing {command}")
+        #         stdin, stdout, stderr = self.ssh.exec_command(command, get_pty=False)
+        #         # print(stdout)
+        #         for l in stdout :
+        #              print("stdout : %s" % l.strip())
+        #         # for l in stderr:
+        #         #     print("stderr : %s" % l.strip())
+
+
+        while True:
+            command = input('')
+            if command == 'exit':
+                break
+
+            channel.send(command + "\n")
+
+            while True:
+                if channel.recv_ready():
+                    output = channel.recv(1024)
+                    print(output.decode('ascii'), end="")
+                else:
+                    time.sleep(0.5)
+                    if not(channel.recv_ready()):
+                        break
+
+        self.ssh.close()
+    
+    def mobile_robot_challenge(self):
+        channel = self.ssh.get_transport().open_session()
+        channel.get_pty()
+        channel.invoke_shell()
+
+        command = '''
+        python3 picar-x/example/Robot_FP.py
+        '''
+        channel.send(command + "\n")
+
+        if channel.recv_ready():
+            output = channel.recv(1024)
+            print(output.decode('ascii'), end="")
+        channel.send('\n')
+
+        if channel.recv_ready():
+            output = channel.recv(1024)
+            print(output.decode('ascii'), end="")
+
+        while True:
+            key = readchar.readkey().lower()
+            
+            channel.send(key)
+            if channel.recv_ready():
+                    output = channel.recv(1024)
+                    print(output.decode('ascii'), end="")
+            if key == 'q':
+                time.sleep(0.5)
+                break
+        
+        self.download_file('Videos/picarx_recording.avi', 'temp/video.avi')
+            # else:
+            #     time.sleep(0.5)
+            #     if not(channel.recv_ready()):
+            #         break
+
+
 if __name__ == '__main__':
     ssh = SSH()
     
-    ssh.transfer_file('tts.txt', 'Downloads/tts.txt')
-    ssh.transfer_file('picarx/tts.py', 'Downloads/tts.py')
+    # ssh.transfer_file('temp/tts.txt', 'Downloads/tts.txt')
+    # ssh.transfer_file('picarx/tts.py', 'Downloads/tts.py')
 
-    command = f'''
-    sudo python3 Downloads/tts.py
-    '''
     
-    output = ssh.run_command(command)
-    print(output)
+    ssh.mobile_robot_challenge()
+    # output = ssh.run_command(command)
+    # print(output)
+
+    
 
     ssh.close()
-    
+

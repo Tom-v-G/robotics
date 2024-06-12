@@ -4,6 +4,13 @@ import matplotlib.pyplot as plt
 import time
 import math
 
+import matplotlib
+gui_env = ['TKAgg','GTKAgg','Qt4Agg','WXAgg']
+
+matplotlib.use('TKAgg', force=True)
+
+print("Using:",matplotlib.get_backend())
+
 from scipy.stats import mode
 from argparse import ArgumentParser
 
@@ -52,6 +59,8 @@ if __name__ == '__main__':
     args = vars(ap.parse_args())
 
     directions_map = np.zeros([args['size'], 5])
+    x_list = []
+    y_list = []
     angles_list = []
 
     # cap = cv.VideoCapture('moving_camera_1.mp4')
@@ -59,7 +68,7 @@ if __name__ == '__main__':
     # cap = cv.VideoCapture('moving_camera_2_speed_4x.mp4')
     # cap = cv.VideoCapture('moving_camera_3.mp4')
     # cap = cv.VideoCapture('car_dashcam.mp4')
-    cap = cv.VideoCapture('picarx_recording3.avi')
+    cap = cv.VideoCapture('temp/video.avi')
     # cap.set(cv.CAP_PROP_EXPOSURE,-300)
 
     if args['record']:
@@ -87,7 +96,7 @@ if __name__ == '__main__':
 
     locArray = []
 
-    previous_timestamp = time.time();
+    previous_timestamp = time.time()
     current_timestamp = 0
 
     total_displacement_x = 0
@@ -101,7 +110,7 @@ if __name__ == '__main__':
         if not grabbed:
             break
 
-        current_timestamp = time.time();
+        current_timestamp = time.time()
         time_difference = current_timestamp - previous_timestamp
 
         print("time difference:", time_difference)
@@ -132,7 +141,9 @@ if __name__ == '__main__':
         total_displacement_x += x_coord
         total_displacement_y += y_coord
 
-        plt.scatter(total_displacement_x,total_displacement_y)
+        x_list.append(total_displacement_x)
+        y_list.append(total_displacement_y)
+        #plt.scatter(total_displacement_x,total_displacement_y)
         
         move_sense = ang[mag > args['threshold']]
         move_mode = mode(move_sense)[0]
@@ -145,11 +156,6 @@ if __name__ == '__main__':
         print("move_mode: ", move_mode)
         # angles_list.append({"angle": move_mode, "time_difference": time_difference})
         angles_list.append(move_mode)
-
-     
-
-
-
 
         if 10 < move_mode <= 100:
             directions_map[-1, 0] = 1
@@ -230,15 +236,19 @@ if __name__ == '__main__':
     if args['plot']:
         plt.ioff()
     cv.destroyAllWindows()
-    print(angles_list)
+    # print(angles_list)
 
-# plt.show()
+fig, ax = plt.subplots()
+print(x_list)
+print(y_list)
+ax.scatter(x_list, y_list)
+fig.savefig('fig.jpg')
 
 print("total_displacement_x: ", total_displacement_x)
 print("total_displacement_y: ", total_displacement_y)
 # print('x_flow:', all_x_flow)
 all_x_flow_array = np.array(all_x_flow)
-print('x_flow:', all_x_flow_array)
-print(np.sum(all_x_flow_array[all_x_flow_array < -1]))
+# print('x_flow:', all_x_flow_array)
+# print(np.sum(all_x_flow_array[all_x_flow_array < -1]))
 angle_final, length_back = calc_way_back(total_displacement_x, total_displacement_y, angle)
 print('returning angle:', angle_final,'length_back:', length_back)
