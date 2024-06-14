@@ -85,6 +85,7 @@ class Robot:
     def stop_camera(self):
         Vilib.rec_video_stop()
         print("Video saved as %s%s.avi"%(Vilib.rec_video_set["path"],self.vname),end='\n')
+        Vilib.camera_close()
 
     def drive_forward(self):
         self.px.set_dir_servo_angle(-8)
