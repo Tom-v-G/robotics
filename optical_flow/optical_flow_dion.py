@@ -20,6 +20,18 @@ from vidstab import VidStab
 # stabilizer = VidStab(threshold=42)
 # stabilizer.stabilize(input_path='picarx_recording3.avi', output_path='picarx_recording3_stable.avi')
 
+def normalize_angle_radians(angle):
+    """
+    Normalize the angle to be within the range of [0, 2*pi).
+    """
+    return angle % (2 * math.pi)
+
+def calc_way_back_live(x_coord, y_coord,current_angle):
+    length_back = np.sqrt((x_coord**2) + (y_coord**2))
+    beta = math.atan(x_coord/y_coord)
+    target_angle = beta + np.pi
+    delta = (normalize_angle_radians(target_angle) - normalize_angle_radians(current_angle) + math.pi) % (2 * math.pi) - math.pi
+    return length_back, target_angle, delta
 
 # make a function that takes the final x and y coordinates and returns the angle is has to make to and how far it is from the home position using pythagoras
 def calc_way_back(x_coord, y_coord,gamma):
@@ -27,11 +39,13 @@ def calc_way_back(x_coord, y_coord,gamma):
     beta = math.atan(x_coord/y_coord)
     if gamma > beta:
         alpha = np.pi - gamma + beta # tegen klok in
+        clockwise = False
     elif gamma < beta:
-        alpha = - (np.pi + gamma - beta) # met de klok mee
+        alpha = - (np.pi + gamma - beta)
+        clockwise = True # met de klok mee
     else: 
         alpha = np.pi
-    return alpha, length_back
+    return alpha, length_back, clockwise
 
 if __name__ == '__main__':
     plt.ion()
@@ -160,52 +174,52 @@ if __name__ == '__main__':
         # angles_list.append({"angle": move_mode, "time_difference": time_difference})
         angles_list.append(move_mode)
 
-        if 10 < move_mode <= 100:
-            directions_map[-1, 0] = 1
-            directions_map[-1, 1:] = 0
-            directions_map = np.roll(directions_map, -1, axis=0)
-        elif 100 < move_mode <= 190:
-            directions_map[-1, 1] = 1
-            directions_map[-1, :1] = 0
-            directions_map[-1, 2:] = 0
-            directions_map = np.roll(directions_map, -1, axis=0)
-        elif 190 < move_mode <= 280:
-            directions_map[-1, 2] = 1
-            directions_map[-1, :2] = 0
-            directions_map[-1, 3:] = 0
-            directions_map = np.roll(directions_map, -1, axis=0)
-        elif 280 < move_mode or move_mode < 10:
-            directions_map[-1, 3] = 1
-            directions_map[-1, :3] = 0
-            directions_map[-1, 4:] = 0
-            directions_map = np.roll(directions_map, -1, axis=0)
-        else:
-            directions_map[-1, -1] = 1
-            directions_map[-1, :-1] = 0
-            directions_map = np.roll(directions_map, 1, axis=0)
+        # if 10 < move_mode <= 100:
+        #     directions_map[-1, 0] = 1
+        #     directions_map[-1, 1:] = 0
+        #     directions_map = np.roll(directions_map, -1, axis=0)
+        # elif 100 < move_mode <= 190:
+        #     directions_map[-1, 1] = 1
+        #     directions_map[-1, :1] = 0
+        #     directions_map[-1, 2:] = 0
+        #     directions_map = np.roll(directions_map, -1, axis=0)
+        # elif 190 < move_mode <= 280:
+        #     directions_map[-1, 2] = 1
+        #     directions_map[-1, :2] = 0
+        #     directions_map[-1, 3:] = 0
+        #     directions_map = np.roll(directions_map, -1, axis=0)
+        # elif 280 < move_mode or move_mode < 10:
+        #     directions_map[-1, 3] = 1
+        #     directions_map[-1, :3] = 0
+        #     directions_map[-1, 4:] = 0
+        #     directions_map = np.roll(directions_map, -1, axis=0)
+        # else:
+        #     directions_map[-1, -1] = 1
+        #     directions_map[-1, :-1] = 0
+        #     directions_map = np.roll(directions_map, 1, axis=0)
 
-        if args['plot']:
-            plt.clf()
-            plt.plot(directions_map[:, 0], label='Forward')
-            plt.plot(directions_map[:, 1], label='Left')
-            plt.plot(directions_map[:, 2], label='Backward')
-            plt.plot(directions_map[:, 3], label='Right')
-            plt.plot(directions_map[:, 4], label='Waiting')
-            plt.legend(loc=2)
-            plt.pause(1e-5)
-            plt.show()
+        # if args['plot']:
+        #     plt.clf()
+        #     plt.plot(directions_map[:, 0], label='Forward')
+        #     plt.plot(directions_map[:, 1], label='Left')
+        #     plt.plot(directions_map[:, 2], label='Backward')
+        #     plt.plot(directions_map[:, 3], label='Right')
+        #     plt.plot(directions_map[:, 4], label='Waiting')
+        #     plt.legend(loc=2)
+        #     plt.pause(1e-5)
+        #     plt.show()
 
-        loc = directions_map.mean(axis=0).argmax()
-        if loc == 0:
-            text = 'Moving forward'
-        elif loc == 1:
-            text = 'Moving to the left'
-        elif loc == 2:
-            text = 'Moving backward'
-        elif loc == 3:
-            text = 'Moving to the right'
-        else:
-            text = 'WAITING'
+        # loc = directions_map.mean(axis=0).argmax()
+        # if loc == 0:
+        #     text = 'Moving forward'
+        # elif loc == 1:
+        #     text = 'Moving to the left'
+        # elif loc == 2:
+        #     text = 'Moving backward'
+        # elif loc == 3:
+        #     text = 'Moving to the right'
+        # else:
+        #     text = 'WAITING'
         
         text = str(angle)
         
@@ -221,6 +235,30 @@ if __name__ == '__main__':
 
         k = cv.waitKey(1) & 0xff
         if k == ord('q'):
+            length_back, target_angle, delta = calc_way_back(total_displacement_x, total_displacement_y, angle)
+            while length_back > 0.1:
+                if delta < -.1: # tegen de klok in
+                    px.set_dir_servo_angle(x_angle) # tegen klok in draaien (linksom)
+                    px.forward(10)
+                    print('delta:', delta)
+                elif delta > .1:
+                    px.set_dir_servo_angle(-x_angle) # met klok mee (rechtsom)
+                    px.forward(10)
+                    print('delta:', delta)
+                else:
+                    px.set_dir_servo_angle(0) # Recht naar voren
+                    px.forward(10)
+                    print('delta:', delta)
+        
+            # if not clockwise:
+            #    while angle < angle_final:
+            #    px.set_dir_servo_angle(x_angle) # tegen klok in draaien (linksom)
+            #    px.forward(10)
+            # elif clockwise:
+            #   while angle  > angle_final:
+            # while angle < angle_final:
+            #   px.set_dir_servo_angle(x_angle)
+            #   px.forward(10)
             break
         if args['record']:
             out.write(frame)
