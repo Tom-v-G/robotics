@@ -1,17 +1,18 @@
-import lib.SSH as SSH
+from lib.SSH import SSH
 
 if __name__ == '__main__':
     ssh = SSH()
     
-    ssh.transfer_file('tts.txt', 'Downloads/tts.txt')
-    ssh.transfer_file('picarx/tts.py', 'Downloads/tts.py')
+    ssh.transfer_file('picarx/Robot.py', 'picar-x/Project/Robot.py')
+    # ssh.transfer_file('10.bull_fight.py', 'Downloads/tts.py')
 
-    command = f'''
-    sudo python3 Downloads/tts.py
-    '''
+    # command = f'''
+    # sudo python3 Downloads/tts.py
+    # '''
     
-    output = ssh.run_command(command)
-    print(output)
+    # output = ssh.run_command(command)
+
+    # print(output)
 
     ssh.close()
     

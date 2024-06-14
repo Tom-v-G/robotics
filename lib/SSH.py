@@ -11,6 +11,7 @@ class SSH:
     
     def __init__(self) -> None:
         self.ssh = self.connect()
+        self.channel = self.open_channel()
 
     def connect(self):
         print('Establishing Robot Connection:')
@@ -58,21 +59,46 @@ class SSH:
         print('Closing Connection')
         self.ssh.close()
 
-    def open_terminal(self):
-        
-        # command = f'''
-        # python3
-        # '''
-        channel = self.ssh.get_transport().open_session()
-        channel.get_pty()
-        channel.invoke_shell()
+    def open_channel(self, printoutput=True):
+        print('Opening channel for commands')
+        try:
+            channel = self.ssh.get_transport().open_session()
+            channel.get_pty()
+            channel.invoke_shell()
+            if printoutput:
+                while True:
+                    if channel.recv_ready():
+                        output = channel.recv(1024)
+                        print(output.decode('ascii'), end="")
+                    else:
+                        time.sleep(0.5)
+                        if not(channel.recv_ready()):
+                            break
 
-        # stdin, stdout, stderr = self.ssh.exec_command(command, get_pty=True)
-        # # for l in iter(stdout.readline, "") :
-        # #     print(l, end="")
-        # # for l in iter(stderr.readline, "") :
-        # #     print(l, end="")
+        except:
+            raise Exception('Channel transport failed.')
+
+        return channel
+
+
+
+    def run_channel_command(self, command, printoutput=False):
+        self.channel.send(command + "\n")
+
+        if not printoutput:
+            return 
         
+        output = b""
+        while True:
+            if self.channel.recv_ready():
+                output = self.channel.recv(1024)
+                print(output.decode('ascii'), end="")
+            else:
+                time.sleep(0.5)
+                if not(self.channel.recv_ready()):
+                    break
+        #return output.decode('ascii')
+
         # print("give command")
         # while True:
         #     key = input()
@@ -89,23 +115,23 @@ class SSH:
         #         #     print("stderr : %s" % l.strip())
 
 
-        while True:
-            command = input('')
-            if command == 'exit':
-                break
+        # while True:
+        #     command = input('')
+        #     if command == 'exit':
+        #         break
 
-            channel.send(command + "\n")
+        #     channel.send(command + "\n")
 
-            while True:
-                if channel.recv_ready():
-                    output = channel.recv(1024)
-                    print(output.decode('ascii'), end="")
-                else:
-                    time.sleep(0.5)
-                    if not(channel.recv_ready()):
-                        break
+        #     while True:
+        #         if channel.recv_ready():
+        #             output = channel.recv(1024)
+        #             print(output.decode('ascii'), end="")
+        #         else:
+        #             time.sleep(0.5)
+        #             if not(channel.recv_ready()):
+        #                 break
 
-        self.ssh.close()
+        # self.ssh.close()
     
     def mobile_robot_challenge(self):
         channel = self.ssh.get_transport().open_session()
@@ -146,16 +172,20 @@ class SSH:
 
 if __name__ == '__main__':
     ssh = SSH()
-    
+
     # ssh.transfer_file('temp/tts.txt', 'Downloads/tts.txt')
     # ssh.transfer_file('picarx/tts.py', 'Downloads/tts.py')
 
     
-    ssh.mobile_robot_challenge()
+    #ssh.mobile_robot_challenge()
     # output = ssh.run_command(command)
     # print(output)
 
-    
+    ssh.run_channel_command('python3')
+
+
+
+
 
     ssh.close()
 

@@ -48,11 +48,13 @@ class Robot:
         self.min_tilt = -30
         self.max_tilt = 30
 
-        self.power = 50
-        self.turning_power = 50
+        self.power = 30
+        self.turning_power = 30
         
         self.left_turn_angle = -24.5
         self.right_turn_angle = 18
+
+        self.DELAY = 0.5 # time that motors are powered
 
         # Initiliase robot
         self.px = Picarx()
@@ -62,9 +64,9 @@ class Robot:
 
         
 
-    def start_camera(self):
+    def start_camera(self, vname="picarx_recording"):
         try:
-            self.vname = 'picarx_recording'
+            self.vname = vname
             username = os.getlogin()
             
             Vilib.rec_video_set["path"] = f"/home/{username}/Videos/" # set path
@@ -84,6 +86,27 @@ class Robot:
         Vilib.rec_video_stop()
         print("Video saved as %s%s.avi"%(Vilib.rec_video_set["path"],self.vname),end='\n')
 
+    def drive_forward(self):
+        self.px.set_dir_servo_angle(-8)
+        self.px.forward(self.power)
+    
+    def drive_backward(self):
+        self.px.set_dir_servo_angle(-7)
+        self.px.backward(self.power)
+
+    def turn_right(self):
+        self.px.set_dir_servo_angle(self.right_turn_angle)
+        self.px.forward(self.turning_power)  
+    
+    def turn_left(self):
+        self.px.set_dir_servo_angle(self.left_turn_angle)
+        self.px.forward(self.turning_power)
+
+    def stop(self):
+        self.px.forward(0)
+
+    
+
     def manual_mode(self):
         
         if self.RECORD:
@@ -96,17 +119,13 @@ class Robot:
             key = key.lower()
             if key in('wsadqklop'): 
                 if 'w' == key:
-                    self.px.set_dir_servo_angle(-8)
-                    self.px.forward(self.power)
+                    self.drive_forward()
                 elif 's' == key:
-                    self.px.set_dir_servo_angle(-7)
-                    self.px.backward(self.power)
+                    self.drive_backward()
                 elif 'a' == key:
-                    self.px.set_dir_servo_angle(self.left_turn_angle)
-                    self.px.forward(self.turning_power)
+                    self.turn_left()
                 elif 'd' == key:
-                    self.px.set_dir_servo_angle(self.right_turn_angle)
-                    self.px.forward(self.turning_power)  
+                    self.turn_right()
                 elif 'k' == key:
                     self.px.set_arm_angle(-75)
                 elif 'l' == key:
@@ -119,7 +138,7 @@ class Robot:
                     break
 
                 sleep(0.5)
-                self.px.forward(0)
+                self.stop()
           
             elif key == readchar.key.CTRL_C:
                 print("\n Quit")
@@ -133,7 +152,7 @@ class Robot:
 
 if __name__== "__main__":
     picar = Robot(True, True)
-    print('Press any key to start')
+    print('Press enter to start')
     start = input()
     picar.manual_mode()
     
