@@ -22,7 +22,10 @@ def normalize_angle_radians(angle):
 
 def calc_way_back_live(x_coord, y_coord, current_angle):
     length_back = np.sqrt(((x_coord)**2) + ((y_coord)**2))
-    angle_start_robot = math.atan(x_coord/y_coord)
+    try:
+        angle_start_robot = math.atan(y_coord/x_coord)
+    except: 
+        angle_start_robot = 0
     if current_angle > angle_start_robot:
         target_angle = np.pi + angle_start_robot
     else:
@@ -33,6 +36,9 @@ def calc_way_back_live(x_coord, y_coord, current_angle):
 
 # make a function that takes the final x and y coordinates and returns the angle is has to make to and how far it is from the home position using pythagoras
 def calc_way_back(x_coord, y_coord,gamma):
+    '''
+    Deprecated
+    '''
     length_back = np.sqrt((x_coord**2) + (y_coord**2))
     beta = math.atan(x_coord/y_coord)
     if gamma > beta:
