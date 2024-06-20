@@ -26,13 +26,13 @@ def normalize_angle_radians(angle):
 def calc_way_back_live(x_coord, y_coord, current_angle):
     length_back = np.sqrt(((x_coord)**2) + ((y_coord)**2))
     try:
-        angle_start_robot = math.atan(y_coord/x_coord)
+        angle_start_robot = math.atan(x_coord/y_coord)
     except: 
         angle_start_robot = 0
     if current_angle > angle_start_robot:
         target_angle = np.pi + angle_start_robot
     else:
-        target_angle = -(np.pi - angle_start_robot)
+        target_angle = (angle_start_robot - np.pi)
     delta = target_angle - current_angle
 
     return length_back, target_angle, delta
@@ -128,10 +128,10 @@ def process_video(filename, x_start=0, y_start=0, angle_start=0, crop=1):
         displacement_y = np.cumsum(velocity_y * dt)
 
         # Translate movement x field to rotation angle
-        angle = angle + x_flow/(945/(np.pi/2)) # radians (gamma)
+        angle = angle + x_flow/(600/(np.pi/2)) # radians (gamma)
 
         if np.abs(angle) > 0.05:
-            factor = .9
+            factor = .6
         else:
             factor = 1
 
@@ -141,8 +141,8 @@ def process_video(filename, x_start=0, y_start=0, angle_start=0, crop=1):
         x_coord = displacement_y * np.cos(angle) * np.sin(angle)
         y_coord = displacement_y * np.cos(angle)**2
 
-        total_displacement_x += x_coord[0]
-        total_displacement_y += y_coord[0]
+        total_displacement_x += x_coord_new[0]
+        total_displacement_y += y_coord_new[0]
 
         x_list.append(total_displacement_x)
         y_list.append(total_displacement_y)
