@@ -130,6 +130,14 @@ def process_video(filename, x_start=0, y_start=0, angle_start=0, crop=1):
         # Translate movement x field to rotation angle
         angle = angle + x_flow/(945/(np.pi/2)) # radians (gamma)
 
+        if np.abs(angle) > 0.05:
+            factor = .9
+        else:
+            factor = 1
+
+        x_coord_new = factor * displacement_y * np.sin(angle)
+        y_coord_new = factor * displacement_y * np.cos(angle)
+
         x_coord = displacement_y * np.cos(angle) * np.sin(angle)
         y_coord = displacement_y * np.cos(angle)**2
 
