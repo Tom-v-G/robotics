@@ -54,5 +54,6 @@ To get videos from the Picar-x to a local computer you open a terminal and use t
 ssh pi@10.42.0.1 
 ```
 6. Create a folder named "temp" on your laptop to store the videos in.
+7. For the speech recognizer, create a file called "question.txt" inside the temp folder.
 
 
