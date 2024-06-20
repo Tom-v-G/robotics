@@ -9,7 +9,7 @@ import math
 from scipy.stats import mode
 from argparse import ArgumentParser
 
-from vidstab import VidStab
+# from vidstab import VidStab
 
 
 matplotlib.use('TKAgg', force=True)
