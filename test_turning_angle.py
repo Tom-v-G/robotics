@@ -53,30 +53,26 @@ if __name__=='__main__':
             elif 'q' == key:
                 print('Exiting manual mode')
                 break
-            sleep(0.7)
+            sleep(0.5)
             ssh.run_channel_command('robot.stop()')
     print('Stopping camera')
     ssh.run_channel_command('robot.stop_camera()')
     sleep(1)
     ssh.download_file(f'Videos/{drive_video_file}_{counter}.avi', f'temp/{drive_video_file}_{counter}.avi')
     
-    x_curr, y_curr, angle_curr = process_video(f'{drive_video_file}_{counter}', crop=0.5)
-    x_curr_plot = (x_curr * 47) / -1.715769835273885 
-    y_curr_plot = (y_curr * 137) / -2.206988055799586 
-    angle_curr_plot = (angle_curr * 0.296705972839036) / 0.09911910495023506
-
-    length_back, target_angle, delta = calc_way_back_live(x_curr_plot, y_curr_plot, angle_curr_plot)
+    x_curr, y_curr, angle_curr = process_video(f'{drive_video_file}_{counter}')
+    length_back, target_angle, delta = calc_way_back_live(x_curr, y_curr, angle_curr)
 
     counter += 1
 
-    x_list = [0, x_curr_plot]
-    y_list = [0, y_curr_plot]
+    x_list = [0, x_curr]
+    y_list = [0, y_curr]
 
     while(length_back >= 0.2 and counter < 3): 
         print(f'''
-          x: {x_curr_plot}
-          y: {y_curr_plot}
-          angle: {angle_curr_plot}
+          x: {x_curr}
+          y: {y_curr}
+          angle: {angle_curr}
           Length back: {length_back}
           Target Angle: {target_angle}
           Delta: {delta}
@@ -97,16 +93,11 @@ if __name__=='__main__':
         sleep(1)
         ssh.download_file(f'Videos/{drive_video_file}_{counter}.avi', f'temp/{drive_video_file}_{counter}.avi')
 
-        x_curr, y_curr, angle_curr = process_video(f'{drive_video_file}_{counter}', x_curr, y_curr, angle_curr, crop=0.5)
+        x_curr, y_curr, angle_curr = process_video(f'{drive_video_file}_{counter}', x_curr, y_curr, angle_curr)
+        length_back, target_angle, delta = calc_way_back_live(x_curr, y_curr, angle_curr)
 
-        x_curr_plot = (x_curr * 47) / -1.715769835273885 
-        y_curr_plot = (y_curr * 137) / -2.206988055799586 
-        angle_curr_plot = (angle_curr * 0.296705972839036) / 0.09911910495023506
-
-        length_back, target_angle, delta = calc_way_back_live(x_curr_plot, y_curr_plot, angle_curr_plot)
-
-        x_list.append(x_curr_plot)
-        y_list.append(y_curr_plot)
+        x_list.append(x_curr)
+        y_list.append(y_curr)
         
         # plt.clf()
         # plt.scatter(x_list, y_list)
