@@ -72,7 +72,7 @@ if __name__=='__main__':
     x_list = [0, x_curr_plot]
     y_list = [0, y_curr_plot]
 
-    while(length_back >= 0.2 and counter < 3): 
+    while(length_back >= 0.2 and counter < 7): 
         print(f'''
           x: {x_curr_plot}
           y: {y_curr_plot}
@@ -91,7 +91,7 @@ if __name__=='__main__':
             ssh.run_channel_command('robot.turn_right()')
         else:
             ssh.run_channel_command('robot.drive_forward()') 
-        sleep(1.5)
+        sleep(0.7)
         ssh.run_channel_command('robot.stop()')
         ssh.run_channel_command(f'robot.stop_camera()')
         sleep(1)
@@ -104,6 +104,7 @@ if __name__=='__main__':
         angle_curr_plot = (angle_curr * 0.296705972839036) / 0.09911910495023506
 
         length_back, target_angle, delta = calc_way_back_live(x_curr_plot, y_curr_plot, angle_curr_plot)
+        print(f"Length back: {length_back}")
 
         x_list.append(x_curr_plot)
         y_list.append(y_curr_plot)
@@ -127,6 +128,6 @@ if __name__=='__main__':
         ax.text(x_list[i+1], y_list[i+1] + 1, str(i), size='x-small')
     # plt.scatter(x_list, y_list)
     # plt.pause(1e-5)
-    # plt.show()
+    plt.show()
     fig.savefig('drive.pdf')
     ssh.close()
