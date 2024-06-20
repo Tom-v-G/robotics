@@ -23,6 +23,27 @@ def normalize_angle_radians(angle):
     """
     return angle #% (2 * math.pi)
 
+def polar_way_back(orientation, phi):
+    if orientation > phi:
+        target_angle = phi + np.pi
+    else:
+        target_angle = phi - np.pi
+    return target_angle, delta
+
+def calc_way_back_live_new(x_coord, y_coord, current_angle):
+    length_back = np.sqrt(((x_coord)**2) + ((y_coord)**2))
+    try:
+        angle_start_robot = math.atan(x_coord/y_coord)
+    except: 
+        angle_start_robot = 0
+    if current_angle > angle_start_robot:
+        target_angle = angle_start_robot + np.pi
+    else:
+        target_angle = angle_start_robot - np.pi
+    delta = target_angle - current_angle
+
+    return length_back, target_angle, delta
+
 def calc_way_back_live(x_coord, y_coord, current_angle):
     length_back = np.sqrt(((x_coord)**2) + ((y_coord)**2))
     try:
@@ -54,7 +75,7 @@ def calc_way_back(x_coord, y_coord,gamma):
         alpha = np.pi
     return alpha, length_back, clockwise
 
-def process_video(filename, x_start=0, y_start=0, angle_start=0, crop=1):
+def process_video(filename, x_start=0, y_start=0, angle_start=0, crop=1, R=0, phi=0, orientation=0):
 
     if crop > 1 or crop <= 0:
         crop = 1
@@ -130,6 +151,12 @@ def process_video(filename, x_start=0, y_start=0, angle_start=0, crop=1):
         # Translate movement x field to rotation angle
         angle = angle + x_flow/(945/(np.pi/2)) # radians (gamma)
 
+        theta2 = x_flow/(945/(np.pi/2))
+        r2 = displacement_y / np.cos(theta2)
+        R = np.sqrt(R**2 + r2**2 + 2 * R * r2 * np.cos(theta2 - phi))
+        orientation = orientation + theta2
+        phi = phi + np.arctan((r2 * np.sin(orientation - phi)) / (r1 + r2 * np.cos(orientation - phi)))
+
         if np.abs(angle) > 0.05:
             factor = .9
         else:
@@ -155,7 +182,7 @@ def process_video(filename, x_start=0, y_start=0, angle_start=0, crop=1):
         # previous_timestamp = current_timestamp
 
     cap.release()
-    return total_displacement_x, total_displacement_y, angle
+    return total_displacement_x, total_displacement_y, angle, phi, R, orientation
     
 
 if __name__ == '__main__':
