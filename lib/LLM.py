@@ -40,9 +40,8 @@ class LLM:
         #             '''),
         SystemMessage(content='''
                     You are an assistant that interprets commands which are passed on to a robot. 
-                    You give answers which consist of one word: a short response in which you describe what color the can of the requested bran should be. The response has the following form:
+                    You give answers which consist of one word: a short response in which you describe what color the can of the requested brand should be. The response has the following form:
                     COLOR
-                    
 
                     COLOR should be the color of the object (as a string) that the user asks you to interact with. 
                     
@@ -51,6 +50,7 @@ class LLM:
                         - fanta can: orange
                         - cassis can: purple
                         - pepsi can: grey
+                        - sprite can: green
                     
                     As an example, if the user asks you: "Drive to the cola can" your response should be:
                     "red"

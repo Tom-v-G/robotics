@@ -19,20 +19,26 @@ if __name__ == '__main__':
 
     # def button():
     
-    sr = SpeechRecognizer()
-    llm = LLM()
-    question_file_path = 'temp/question.txt'
-    answer_file_path = 'temp/answer.txt'
-    sr.listen(question_file_path)
-    
-    llm.answer(question_file_path, answer_file_path)
+    while True:
+      sr = SpeechRecognizer()
+      llm = LLM()
+      question_file_path = 'temp/question.txt'
+      answer_file_path = 'temp/answer.txt'
+      sr.listen(question_file_path, keyword="please")
+      
+      llm.answer(question_file_path, answer_file_path)
 
-    with open(answer_file_path, 'r') as file:
-        text = file.read()
-    print(text)
+      with open(answer_file_path, 'r') as file:
+          text = file.read()
+      print(text)
 
+      # color_map = ['red', 'green', 'yellow']
+      # for idx, color in enumerate(color_map):
+      #   val = text.lower().find(color)
+      #   if val != -1:
+      #     ssh.run_channel_command(f'robot.bullfight("{color_map[idx]}")', True)  
 
-    ssh.run_channel_command(f'robot.bullfight("{text.lower()}")', True)   
+      input()
     # # Activate Manual Mode
 
     # print('Activating Robot')

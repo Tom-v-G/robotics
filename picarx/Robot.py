@@ -8,9 +8,9 @@ sys.path.append(str(path_root) + '/picarx')
 
 
 from picarx import Picarx
+import time
 from time import sleep
 import readchar
-from time import sleep,strftime,localtime
 from vilib import Vilib
 #from robot_hat import Pin, Servo
 
@@ -118,7 +118,10 @@ class Robot:
         dir_angle=0
         x_angle =0
         y_angle =0
-        while True:
+        
+        start = time.time()
+        
+        while time.time() - start < 5:
             if Vilib.detect_obj_parameter['color_n']!=0:
                 coordinate_x = Vilib.detect_obj_parameter['color_x']
                 coordinate_y = Vilib.detect_obj_parameter['color_y']
@@ -146,6 +149,8 @@ class Robot:
             else :
                 self.px.forward(0)
                 sleep(0.05)
+        self.px.forward(0)
+        Vilib.camera_close()
 
 
     def manual_mode(self):
