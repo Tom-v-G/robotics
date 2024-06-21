@@ -28,6 +28,7 @@ def polar_way_back(orientation, phi):
         target_angle = phi + np.pi
     else:
         target_angle = phi - np.pi
+    delta = target_angle - orientation
     return target_angle, delta
 
 def calc_way_back_live_new(x_coord, y_coord, current_angle):
@@ -75,7 +76,7 @@ def calc_way_back(x_coord, y_coord,gamma):
         alpha = np.pi
     return alpha, length_back, clockwise
 
-def process_video(filename, x_start=0, y_start=0, angle_start=0, crop=1, R=0, phi=0, orientation=0):
+def process_video(filename, x_start=0, y_start=0, angle_start=0, R=0, phi=0, orientation=0, crop=1):
 
     if crop > 1 or crop <= 0:
         crop = 1
@@ -153,10 +154,10 @@ def process_video(filename, x_start=0, y_start=0, angle_start=0, crop=1, R=0, ph
 
         theta2 = x_flow/(945/(np.pi/2))
         r2 = displacement_y / np.cos(theta2)
-        R = np.sqrt(R**2 + r2**2 + 2 * R * r2 * np.cos(theta2 - phi))
+        R_ = np.sqrt(R**2 + r2**2 + 2 * R * r2 * np.cos(theta2 - phi))
         orientation = orientation + theta2
-        phi = phi + np.arctan((r2 * np.sin(orientation - phi)) / (r1 + r2 * np.cos(orientation - phi)))
-
+        phi = phi + np.arctan((r2 * np.sin(orientation - phi)) / (R + r2 * np.cos(orientation - phi)))
+        R = R_
         if np.abs(angle) > 0.05:
             factor = .6
         else:
@@ -182,7 +183,7 @@ def process_video(filename, x_start=0, y_start=0, angle_start=0, crop=1, R=0, ph
         # previous_timestamp = current_timestamp
 
     cap.release()
-    return total_displacement_x, total_displacement_y, angle, phi, R, orientation
+    return total_displacement_x, total_displacement_y, angle, R, phi, orientation
     
 
 if __name__ == '__main__':

@@ -112,7 +112,7 @@ class Robot:
             return max(min(num, max(a, b)), min(a, b))
         
         Vilib.camera_start()
-        Vilib.display()
+        # Vilib.display()
         Vilib.color_detect(color)
         speed = 50
         dir_angle=0
@@ -151,6 +151,54 @@ class Robot:
                 sleep(0.05)
         self.px.forward(0)
         Vilib.camera_close()
+
+    def touch_cola(self):
+        
+        def clamp_number(num,a,b):
+            return max(min(num, max(a, b)), min(a, b))
+        
+        # Vilib.display()
+        Vilib.color_detect('red')
+        speed = 30
+        dir_angle=0
+        x_angle =0
+        y_angle =0
+        
+        start = time.time()
+        
+        while time.time() - start < 6:
+            if Vilib.detect_obj_parameter['color_n']!=0:
+                w = Vilib.detect_obj_parameter['color_w']
+                h = Vilib.detect_obj_parameter['color_h']
+                
+                if w >= 320 and h >= 240: #if close to object
+                    self.px.forward(speed) #drive straight
+                    sleep(0.5)
+                    self.px.forward(0)
+                    break #break the loop
+                else:
+                    coordinate_x = Vilib.detect_obj_parameter['color_x']
+                    coordinate_y = Vilib.detect_obj_parameter['color_y']
+                
+                    x_angle +=(coordinate_x*10/640)-5
+                    x_angle = clamp_number(x_angle,-35,35)
+
+                    y_angle -=(coordinate_y*10/480)-5
+                    y_angle = clamp_number(y_angle,-35,35)
+                    
+                    if dir_angle > x_angle:
+                        dir_angle += 1
+                    elif dir_angle < x_angle:
+                        dir_angle -= 1
+                    self.px.set_dir_servo_angle(dir_angle)
+                    self.px.forward(speed)
+                    sleep(0.10)
+            else :
+                # Turn until object is visible
+                self.turn_left()
+                sleep(0.10)
+        self.px.forward(0)
+        sleep(0.10)
 
 
     def manual_mode(self):

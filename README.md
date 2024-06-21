@@ -1,11 +1,61 @@
-Start up file of the Picar-x:
+# Using the Picar-X
 
-Hotspot:
+### wifi hotspot credentials
+```
 SSID: robot20
 Pwd: robot2020
+```
+
+### picar-x login credentials
+```
+userID: pi
+password: raspberry
+```
+
+## Final Project Setup
+1. Create a python virtual environment / conda environtment henceforth refered to as `venv`.
+2. (Linux only) Install [portAudio](https://files.portaudio.com/) on your machine
+3. Install [Ollama](https://ollama.com/) and in your terminal run the command  `ollama run llama3:latest` to download the latest llama LLM version.
+3. Install the following packages:
+   ```
+   vosk=0.3.45
+   langchain=0.2.0
+   langchain-community=0.2.0
+   paramiko=3.4.0
+   pyaudio=0.2.14
+   numpy=1.26.4
+   matplotlib=3.8.3
+   readchar=4.1.0
+   opencv-python=4.9.0.80
+   ```
+4. Download the  [vosk-model-en-us-0.22](https://alphacephei.com/vosk/models). Create a folder called vosk-models in your project workspace and place the model in the folder.
+5. Connect with SSH at least once via your terminal with the command
+```
+ssh pi@10.42.0.1 
+```
+This stores the ssh credentials so that python has access to them. The conneciton can be closed afterwards.
+6. Create a folder named "temp" in your project workspace. Videos from the robot will be downloaded to this directory.
+
+## Mobile Robot Challenge Setup
+1. Create a python virtual environment / conda environtment henceforth refered to as `venv`.
+2. Install the following packages:
+   ```
+   paramiko=3.4.0
+   numpy=1.26.4
+   matplotlib=3.8.3
+   readchar=4.1.0
+   opencv-python=4.9.0.80
+   ```
+3. Connect with SSH at least once via your terminal with the command
+   ```
+   ssh pi@10.42.0.1 
+   ```
+   This stores the ssh credentials so that python has access to them. The connection can be closed afterwards.
+
+4. Create a folder named "temp" in your project workspace. Videos from the robot will be downloaded to this directory.
 
 
-QuickStart for the PiCar-X Robot
+## QuickStart for the PiCar-X Robot
 
 1) Switch on the robot.
 
@@ -43,17 +93,6 @@ To get videos from the Picar-x to a local computer you open a terminal and use t
 ```sudo scp -r "pi@10.42.0.1:/home/pi/Videos/picarx_recording.avi" ~/Downloads```
 
 
-## Setting up
-1. Create a python virtual environment / conda environtment henceforth refered to as `venv`.
-2. Install [portAudio](https://files.portaudio.com/)
-3. Install Ollama and in your terminal run the command  `ollama run llama3:latest` to download the latest LLM version.
-3. install the packages in requirements.txt with pip in your venv
-4. Download the  [vosk-model-en-us-0.22](https://alphacephei.com/vosk/models) and place it in a folder called vosk-models
-5. Connect with SSH at least once via your terminal with:
-```
-ssh pi@10.42.0.1 
-```
-6. Create a folder named "temp" on your laptop to store the videos in.
-7. For the speech recognizer, create a file called "question.txt" inside the temp folder.
+
 
 
