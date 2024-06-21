@@ -1,4 +1,4 @@
-# Using the Picar-X
+# Codebase Team Kaasplankje
 
 ### wifi hotspot credentials
 ```
@@ -55,42 +55,18 @@ This stores the ssh credentials so that python has access to them. The connecito
 4. Create a folder named "temp" in your project workspace. Videos from the robot will be downloaded to this directory.
 
 
-## QuickStart for the PiCar-X Robot
-
-1) Switch on the robot.
-
-2) Connect to the robot's WLAN hotspot.
-   See above for WLAN SSID and password.
-
-3) When connected to the robot's hotspot, use a RealVNC client 
-   on your laptop to connect to IP-address 10.42.0.1
-
-4) Login with the following credentials: 
-   login name: pi
-   password: raspberry
-
-5) Put the robot on the battery charger, such that the wheels 
-   are free to turn.
-
-6) Open a terminal on the VNC desktop, and issue the following commands:
-   ```cd picar-x/example```
-   ```sudo python3 2.keyboard_control.py```
-
-   Use the wasd-keys to control the robot, and CTRL-C to quit
-
-7) See the other examples for camera input, etc.
-
-See also:
-
-https://docs.sunfounder.com/projects/picar-x/en/latest/python/python_keyboard.html
-Etc.
-
-And for Calibration of steering, etc.:
-https://docs.sunfounder.com/projects/picar-x/en/latest/python/python_calibrate.html
-
-
-To get videos from the Picar-x to a local computer you open a terminal and use this code:
-```sudo scp -r "pi@10.42.0.1:/home/pi/Videos/picarx_recording.avi" ~/Downloads```
+## Important Files
+- `SSH.py`: Contains a wrapper class for interacting with the Paramiko SSH client.
+Allows for connecting with the robot, transferring files, excecuting bash and
+python code on the robot and reading the output
+- `FlowAnalyzer.py`: Contains functions for calculating the robots position from
+the optical flow of a video and calculating the path back to the origin
+- `LLM.py`: Contain wrapper functions for interacting with the local LLM
+- `SpeechRecognizer.py`: contains wrapper functions for interacting with the local speech recognition model
+- `Robot.py`: Contains the code which is run on the Picar-X
+- `Mobile_Robot_Challenge_1.py`: code for the first task of the mobile Robot Challenge
+- `Mobile_Robot_Challenge_2.py`: code for the second task of the mobile Robot Challenge
+- `Final_Robot_Project.py`: code for the final project 
 
 
 

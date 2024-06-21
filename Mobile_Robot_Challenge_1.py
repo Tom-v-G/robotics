@@ -77,10 +77,10 @@ if __name__=='__main__':
 
     x_list = [0, x_curr_plot]
     y_list = [0, y_curr_plot]
-    R_list = [0, R[0]]
+    R_list = [0, 3*R[0]]
     phi_list = [0, phi[0]]
 
-    while(R >= 0.2 and counter < 3): 
+    while(3*R >= 0.002 and counter < 8): 
         print(f'''
         #   x: {x_curr_plot}
         #   y: {y_curr_plot}
@@ -117,7 +117,7 @@ if __name__=='__main__':
 
         x_list.append(x_curr_plot)
         y_list.append(y_curr_plot)
-        R_list.append(R[0])
+        R_list.append(3*R[0])
         phi_list.append(phi[0])
         
         # plt.clf()
