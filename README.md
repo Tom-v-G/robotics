@@ -56,6 +56,7 @@ This stores the ssh credentials so that python has access to them. The connecito
 
 
 ## Important Files
+### Lib folder
 - `SSH.py`: Contains a wrapper class for interacting with the Paramiko SSH client.
 Allows for connecting with the robot, transferring files, excecuting bash and
 python code on the robot and reading the output
@@ -63,7 +64,9 @@ python code on the robot and reading the output
 the optical flow of a video and calculating the path back to the origin
 - `LLM.py`: Contain wrapper functions for interacting with the local LLM
 - `SpeechRecognizer.py`: contains wrapper functions for interacting with the local speech recognition model
+### Picar-x folder
 - `Robot.py`: Contains the code which is run on the Picar-X
+### Root folder
 - `Mobile_Robot_Challenge_1.py`: code for the first task of the mobile Robot Challenge
 - `Mobile_Robot_Challenge_2.py`: code for the second task of the mobile Robot Challenge
 - `Final_Robot_Project.py`: code for the final project 
